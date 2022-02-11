@@ -63,7 +63,7 @@ open class YPImagePicker: UINavigationController {
     }
     
     private let loadingView = YPLoadingView()
-    let picker: YPPickerVC!
+    public let picker: YPPickerVC!
 
     override open func viewDidLoad() {
         super.viewDidLoad()

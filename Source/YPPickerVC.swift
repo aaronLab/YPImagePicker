@@ -23,7 +23,7 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
     var initialStatusBarHidden = false
     weak var pickerVCDelegate: YPPickerVCDelegate?
     
-    var nextPressed = PublishSubject<[YPMediaItem]>()
+    public var nextPressed = PublishSubject<[YPMediaItem]>()
     
     override open var prefersStatusBarHidden: Bool {
         return (shouldHideStatusBar || initialStatusBarHidden) && YPConfig.hidesStatusBar
