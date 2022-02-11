@@ -9,6 +9,7 @@
 import UIKit
 import Stevia
 import Photos
+import RxSwift
 
 protocol YPPickerVCDelegate: AnyObject {
     func libraryHasNoItems()
@@ -21,6 +22,8 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
     var shouldHideStatusBar = false
     var initialStatusBarHidden = false
     weak var pickerVCDelegate: YPPickerVCDelegate?
+    
+    var nextPressed = PublishSubject<Void>()
     
     override open var prefersStatusBarHidden: Bool {
         return (shouldHideStatusBar || initialStatusBarHidden) && YPConfig.hidesStatusBar
@@ -314,6 +317,8 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
     @objc
     func done() {
         guard let libraryVC = libraryVC else { ypLog("YPLibraryVC deallocated"); return }
+        
+        nextPressed.onNext(())
         
         if mode == .library {
             libraryVC.selectedMedia(photoCallback: { photo in
