@@ -23,7 +23,7 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
     var initialStatusBarHidden = false
     weak var pickerVCDelegate: YPPickerVCDelegate?
     
-    var nextPressed = PublishSubject<Void>()
+    var nextPressed = PublishSubject<[YPMediaItem]>()
     
     override open var prefersStatusBarHidden: Bool {
         return (shouldHideStatusBar || initialStatusBarHidden) && YPConfig.hidesStatusBar
@@ -317,16 +317,23 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
     @objc
     func done() {
         guard let libraryVC = libraryVC else { ypLog("YPLibraryVC deallocated"); return }
-        
-        nextPressed.onNext(())
-        
         if mode == .library {
-            libraryVC.selectedMedia(photoCallback: { photo in
+            libraryVC.selectedMedia(photoCallback: { [weak self] photo in
+                guard let self = self else { return }
+                
+                self.nextPressed.onNext([YPMediaItem.photo(p: photo)])
                 self.didSelectItems?([YPMediaItem.photo(p: photo)])
-            }, videoCallback: { video in
+            }, videoCallback: { [weak self] video in
+                guard let self = self else { return }
+                
+                self.nextPressed.onNext([YPMediaItem
+                                        .video(v: video)])
                 self.didSelectItems?([YPMediaItem
                                         .video(v: video)])
-            }, multipleItemsCallback: { items in
+            }, multipleItemsCallback: { [weak self] items in
+                guard let self = self else { return }
+                
+                self.nextPressed.onNext(items)
                 self.didSelectItems?(items)
             })
         }
